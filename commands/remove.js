@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import readline from 'readline';
 import { loadSnippets, saveSnippets, deleteSnippet, getSnippet } from '../lib/store.js';
+import { removeSnippetFromEditor } from '../lib/exporters.js';
 
 /**
  * Handles the "rm" command.
@@ -70,7 +71,12 @@ export async function removeCommand(args) {
     for (const name of toDelete) {
       deleteSnippet(name);
     }
-    console.log(chalk.green(`\n  ✓ Deleted ${toDelete.length} snippet(s)\n`));
+    const sync = removeSnippetFromEditor(toDelete);
+    console.log(chalk.green(`\n  ✓ Deleted ${toDelete.length} snippet(s)`));
+    if (sync && sync.success && sync.editors?.length > 0) {
+      console.log(chalk.dim(`    ↻ Auto-synced removal to ${sync.editors.join(', ')}`));
+    }
+    console.log('');
     return;
   }
 
@@ -102,7 +108,13 @@ export async function removeCommand(args) {
     }
 
     deleteSnippet(name);
-    console.log(chalk.green(`  ✓ Deleted "${name}"\n`));
+    const sync = removeSnippetFromEditor(name);
+    console.log(chalk.green(`  ✓ Deleted "${name}"`));
+    if (sync && sync.success && sync.editors?.length > 0) {
+      console.log(chalk.dim(`    ↻ Auto-synced removal to ${sync.editors.join(', ')}\n`));
+    } else {
+      console.log('');
+    }
   }
 }
 
@@ -262,9 +274,13 @@ async function interactiveRemove(entries, snippets) {
         for (const name of toDelete) {
           deleteSnippet(name);
         }
+        const sync = removeSnippetFromEditor(toDelete);
         stdout.write(chalk.green(`\n  ✓ Deleted ${toDelete.length} snippet(s):\n`));
         for (const name of toDelete) {
           stdout.write(chalk.dim(`    - ${name}\n`));
+        }
+        if (sync && sync.success && sync.editors?.length > 0) {
+          stdout.write(chalk.dim(`  ↻ Auto-synced removal to ${sync.editors.join(', ')}\n`));
         }
         stdout.write('\n');
         resolve();
