@@ -97,10 +97,10 @@ program
 
 // ─── completion: shell tab completion ──────────────────────────────────────
 program
-  .command('completion [shell]')
-  .description('Output shell completion script (bash, powershell)')
-  .action((shell) => {
-    completionCommand(shell);
+  .command('completion [shell] [target]')
+  .description('Output shell completion script (bash, powershell) or install automatically')
+  .action((shell, target) => {
+    completionCommand(shell, target);
   });
 
 // ─── Error handling ────────────────────────────────────────────────────────
