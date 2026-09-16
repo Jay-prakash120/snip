@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { getSnippet } from '../lib/store.js';
+import { highlightLine, detectLanguage } from '../lib/highlighter.js';
 
 /**
  * Handles the "cat" command — displays snippet details in a pretty box.
@@ -22,7 +23,8 @@ export function catCommand(name) {
   const body = Array.isArray(snippet.body) ? snippet.body : [snippet.body];
   const description = snippet.description || '';
 
-  const language = snippet.language || '';
+  const detectedLang = detectLanguage(body.join('\n'), name, snippet.language);
+  const language = snippet.language || detectedLang || '';
 
   // Calculate box width
   const allLines = [
@@ -60,10 +62,11 @@ export function catCommand(name) {
   // Separator
   console.log(chalk.dim(`  ├${hLine}┤`));
 
-  // Body
+  // Body with syntax highlighting
   for (const line of body) {
+    const highlighted = highlightLine(line, detectedLang);
     console.log(
-      chalk.dim('  │') + '  ' + chalk.white(pad(line, width - 2)) + chalk.dim('│')
+      chalk.dim('  │') + '  ' + pad(highlighted, width - 2) + chalk.dim('│')
     );
   }
 
