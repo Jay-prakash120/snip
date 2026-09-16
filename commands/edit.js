@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { getSnippet, upsertSnippet } from '../lib/store.js';
 import { promptBody } from '../lib/prompt-body.js';
+import { autoExportIfEnabled } from '../lib/exporters.js';
 
 /**
  * Handles the "edit" command — opens snippet body in configured editor for modification.
@@ -21,30 +22,36 @@ export async function editCommand(name, options) {
   }
 
   const currentBody = Array.isArray(snippet.body) ? snippet.body.join('\n') : snippet.body;
-
-  console.log(chalk.cyan(`\n  Editing snippet: ${chalk.bold(name)}\n`));
-
-  const newBodyText = await promptBody({
-    defaultValue: currentBody,
-    header: `Editing: ${name}`,
-  });
-
-  if (newBodyText === null) {
-    console.log(chalk.dim('\n  Aborted.\n'));
-    return;
-  }
-
-  const newLines = newBodyText.split('\n');
-
-  if (newLines.length === 0 || newLines.every((l) => l.trim() === '')) {
-    console.error(chalk.red('\n  ✗ Error: Snippet body cannot be empty.\n'));
-    process.exit(1);
-  }
-
-  // Determine what changed
   const descChanged = options.message !== undefined;
   const langChanged = options.lang !== undefined;
-  const bodyChanged = currentBody !== newBodyText;
+  const wantsBodyEdit = options.body === true || (!descChanged && !langChanged);
+
+  let newLines = Array.isArray(snippet.body) ? [...snippet.body] : [snippet.body];
+  let bodyChanged = false;
+
+  if (wantsBodyEdit) {
+    console.log(chalk.cyan(`\n  Editing snippet: ${chalk.bold(name)}\n`));
+
+    const newBodyText = await promptBody({
+      defaultValue: currentBody,
+      header: `Editing: ${name}`,
+      language: options.lang || snippet.language || '',
+    });
+
+    if (newBodyText === null) {
+      console.log(chalk.dim('\n  Aborted.\n'));
+      return;
+    }
+
+    newLines = newBodyText.split('\n');
+
+    if (newLines.length === 0 || newLines.every((l) => l.trim() === '')) {
+      console.error(chalk.red('\n  ✗ Error: Snippet body cannot be empty.\n'));
+      process.exit(1);
+    }
+
+    bodyChanged = currentBody !== newBodyText;
+  }
 
   if (!bodyChanged && !descChanged && !langChanged) {
     console.log(chalk.yellow('\n  No changes detected.\n'));
@@ -72,6 +79,11 @@ export async function editCommand(name, options) {
   }
   if (langChanged) {
     console.log(chalk.dim(`    Language: "${updatedSnippet.language}"`));
+  }
+
+  const sync = autoExportIfEnabled();
+  if (sync && sync.success && sync.editors?.length > 0) {
+    console.log(chalk.dim(`    ↻ Auto-synced to ${sync.editors.join(', ')}`));
   }
   console.log('');
 }
