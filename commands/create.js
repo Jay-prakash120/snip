@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { confirm } from '@inquirer/prompts';
 import { getSnippet, upsertSnippet } from '../lib/store.js';
 import { promptBody } from '../lib/prompt-body.js';
+import { autoExportIfEnabled } from '../lib/exporters.js';
 
 /**
  * Handles the "create snippet" flow.
@@ -40,6 +41,7 @@ export async function createCommand(name, options) {
 
   const bodyText = await promptBody({
     header: `Creating: ${name}`,
+    language: options.lang || '',
   });
 
   if (bodyText === null) {
@@ -69,5 +71,11 @@ export async function createCommand(name, options) {
   if (snippet.language) {
     console.log(chalk.dim(`    Language: ${snippet.language}`));
   }
-  console.log(chalk.dim(`    ${lines.length} line(s)\n`));
+  console.log(chalk.dim(`    ${lines.length} line(s)`));
+
+  const sync = autoExportIfEnabled();
+  if (sync && sync.success && sync.editors?.length > 0) {
+    console.log(chalk.dim(`    ↻ Auto-synced to ${sync.editors.join(', ')}`));
+  }
+  console.log('');
 }
