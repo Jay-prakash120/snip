@@ -1,0 +1,21 @@
+{
+  "name": "snip-cli",
+  "version": "1.0.0",
+  "description": "A git-inspired CLI tool to create, manage, and export code snippets effortlessly",
+  "main": "bin/snip.js",
+  "bin": {
+    "snip": "./bin/snip.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["snippets", "cli", "vscode", "developer-tools"],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@inquirer/prompts": "^7.10.1",
+    "chalk": "^6.0.0",
+    "commander": "^15.0.0"
+  }
+}
