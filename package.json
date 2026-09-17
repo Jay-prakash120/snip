@@ -4,7 +4,7 @@
   "description": "A git-inspired CLI tool to create, manage, and export code snippets effortlessly",
   "main": "bin/snip.js",
   "bin": {
-    "snip": "./bin/snip.js"
+    "snip": "bin/snip.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
