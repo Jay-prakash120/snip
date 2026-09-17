@@ -5,7 +5,7 @@ A git-inspired CLI tool to create, manage, and export code snippets — no more 
 ## Install
 
 ```bash
-npm install -g .
+npm install -g snipjs
 ```
 
 ## Usage
