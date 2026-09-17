@@ -1,5 +1,5 @@
 {
-  "name": "snip-cli",
+  "name": "snipjs",
   "version": "1.0.0",
   "description": "A git-inspired CLI tool to create, manage, and export code snippets effortlessly",
   "main": "bin/snip.js",
@@ -9,10 +9,30 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["snippets", "cli", "vscode", "developer-tools"],
-  "author": "",
+  "keywords": [
+    "snippets",
+    "cli",
+    "vscode",
+    "antigravity",
+    "developer-tools"
+  ],
+  "author": "Jay Prakash",
   "license": "ISC",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jay-prakash120/snip.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jay-prakash120/snip/issues"
+  },
+  "homepage": "https://github.com/Jay-prakash120/snip#readme",
+  "files": [
+    "bin/",
+    "commands/",
+    "lib/",
+    "README.md"
+  ],
   "dependencies": {
     "@inquirer/prompts": "^7.10.1",
     "chalk": "^6.0.0",
