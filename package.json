@@ -1,5 +1,5 @@
 {
-  "name": "snipjs",
+  "name": "@piceofsilicon/snip",
   "version": "1.0.0",
   "description": "A git-inspired CLI tool to create, manage, and export code snippets effortlessly",
   "main": "bin/snip.js",
