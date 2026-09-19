@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { readFileSync } from 'fs';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { createCommand } from '../commands/create.js';
@@ -14,6 +15,10 @@ import { syncCommand } from '../commands/sync.js';
 import { listSnippetNames } from '../lib/completion.js';
 import { SUPPORTED_EDITORS } from '../lib/exporters.js';
 import { startRepl } from '../lib/repl.js';
+
+const pkg = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf-8')
+);
 
 // ─── Hidden: shell completion helper ───────────────────────────────────────
 // Called by tab completion scripts to get dynamic snippet names.
@@ -31,7 +36,7 @@ const program = new Command();
 program
   .name('snip')
   .description('A git-inspired CLI tool to create, manage, and export code snippets')
-  .version('1.0.0', '-v, --version');
+  .version(pkg.version, '-v, --version');
 
 // ─── Default command: launch shell (if no args) or create a snippet ───────
 program
@@ -49,6 +54,17 @@ program
       }
       return;
     }
+    const mergedOptions = { ...program.opts(), ...options };
+    await createCommand(name, mergedOptions);
+  });
+
+// ─── create: create a snippet ──────────────────────────────────────────────
+program
+  .command('create <name>')
+  .description('Create a new snippet')
+  .option('-m, --message <description>', 'description for the snippet')
+  .option('-l, --lang <language>', 'language scope (e.g. python, javascript)')
+  .action(async (name, options) => {
     const mergedOptions = { ...program.opts(), ...options };
     await createCommand(name, mergedOptions);
   });
