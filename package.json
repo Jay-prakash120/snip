@@ -7,7 +7,8 @@
   },
   "main": "bin/snip.js",
   "bin": {
-    "snip": "bin/snip.js"
+    "snip": "bin/snip.js",
+    "snip-editor": "bin/snip-editor.js"
   },
   "scripts": {
     "test": "node bin/snip.js --version && node --test"
