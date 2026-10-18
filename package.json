@@ -10,7 +10,7 @@
     "snip": "bin/snip.js"
   },
   "scripts": {
-    "test": "node bin/snip.js --version"
+    "test": "node bin/snip.js --version && node --test"
   },
   "keywords": [
     "snippets",
