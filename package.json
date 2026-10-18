@@ -1,6 +1,6 @@
 {
   "name": "@piceofsilicon/snip",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A git-inspired CLI tool to create, manage, and export code snippets effortlessly",
   "publishConfig": {
     "access": "public"
