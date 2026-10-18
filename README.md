@@ -10,9 +10,9 @@ npm install -g @piceofsilicon/snip
 
 ## Usage
 
-### Interactive Shell (Real-Time Ghost Text)
+### Interactive Shell (REPL)
 
-Run `snip` with no arguments to launch the interactive shell:
+Run `snip` with no arguments to launch the interactive shell with real-time dimmed ghost suggestions:
 
 ```bash
 snip
@@ -20,98 +20,81 @@ snip
 ```
 
 - Real-time dimmed gray ghost suggestions as you type commands, flags, and snippet names
-- Press **Tab** or **→** to accept ghost text
-- **Up / Down** arrows to navigate command history
-- Type `exit` or press **Ctrl+C** to leave
+- Press <kbd>Tab</kbd> or <kbd>→</kbd> to accept ghost suggestions
+- <kbd>Ctrl+←</kbd> / <kbd>Ctrl+→</kbd> to jump word by word
+- <kbd>Ctrl+W</kbd> / <kbd>Ctrl+Backspace</kbd> to delete word backward
+- <kbd>↑</kbd> / <kbd>↓</kbd> arrows to navigate command history
+- Type `exit` or press <kbd>Ctrl+C</kbd> to leave
 
-### Create a snippet
+### Snippet Management
 
 ```bash
+# Create a new snippet (opens the inline editor)
 snip "replace_many()"
 snip "replace_many()" -m "a python function to handle multiple replace at a time"
-```
 
-An editor opens — paste your snippet body, save & close.
-
-### View a snippet
-
-```bash
+# Display a snippet with syntax highlighting
 snip cat "replace_many()"
-```
 
-### Edit a snippet
-
-```bash
-snip edit "replace_many()"
-snip edit "replace_many()" -m "updated description"
-```
-
-### List all snippets
-
-```bash
+# List all saved snippets
 snip ls
-```
 
-### Remove a snippet
-
-```bash
+# Remove a snippet
 snip rm "replace_many()"
-```
 
-### Interactive Shell (Ghost Auto-Suggestions)
-
-Just run `snip` to enter the interactive shell:
-
-```bash
-snip
-```
-
-Features:
-- Real-time ghost text auto-suggestions as you type.
-- Press <kbd>Tab</kbd> or <kbd>→</kbd> to accept suggestions.
-- History navigation with <kbd>↑</kbd> and <kbd>↓</kbd>.
-- Type `exit` or press <kbd>Ctrl+C</kbd> to leave.
-
-### Edit a snippet
-
-```bash
 # Edit snippet body in the inline editor
 snip edit "my_snippet"
 
-# Edit metadata only (language scope / description) without opening editor
-snip edit "my_snippet" -l "python"
-snip edit "my_snippet" -m "Updated description"
-snip edit "my_snippet" -l "js" -m "New desc"
+# Edit metadata only without opening the editor
+snip edit "my_snippet" -l "python" -m "Updated description"
 
-# Edit both metadata and body
+# Edit both metadata and snippet body
 snip edit "my_snippet" -l "ts" -b
 ```
 
 ### Standalone File Editor (`snip-editor`)
 
-Edit any local file directly using the in-terminal editor:
+Edit any local file directly in your terminal using the inline editor:
 
 ```bash
 snip-editor path/to/file.js
 ```
 
-### Inline Editor Keyboard Shortcuts
+### Keyboard Shortcuts & Editor Features
 
-When editing snippets inside the terminal inline editor:
+The inline editor widget includes a rich set of IDE-like keyboard shortcuts for fast, efficient terminal text editing:
 
-| Shortcut | Description |
-| --- | --- |
-| <kbd>Ctrl+S</kbd> | Save and finish |
-| <kbd>Esc</kbd> / <kbd>Ctrl+C</kbd> | Cancel editing |
-| <kbd>Ctrl+Z</kbd> | Undo last change |
-| <kbd>Ctrl+Y</kbd> / <kbd>Ctrl+Shift+Z</kbd> | Redo change |
-| <kbd>Ctrl+←</kbd> / <kbd>Ctrl+→</kbd> | Jump backward / forward word by word |
-| <kbd>Ctrl+Home</kbd> | Jump to first position at first line |
-| <kbd>Ctrl+End</kbd> | Jump to end position at last line |
-| <kbd>Home</kbd> / <kbd>End</kbd> | Jump to beginning / end of current line |
-| <kbd>Ctrl+W</kbd> / <kbd>Ctrl+Backspace</kbd> | Delete previous word |
-| <kbd>Ctrl+Delete</kbd> | Delete next word |
-| <kbd>Tab</kbd> / <kbd>→</kbd> | Accept ghost text suggestion or indent |
+#### 1. History & Undo/Redo
+| Shortcut | Action | Description |
+| --- | --- | --- |
+| <kbd>Ctrl+Z</kbd> | **Undo** | Reverts the last change (typing burst, line split, paste, or deletion) |
+| <kbd>Ctrl+Y</kbd> / <kbd>Ctrl+Shift+Z</kbd> | **Redo** | Re-applies the previously undone change |
+
+#### 2. Word & Document Navigation
+| Shortcut | Action | Description |
+| --- | --- | --- |
+| <kbd>Ctrl+←</kbd> / <kbd>Ctrl+→</kbd> | **Word Jump** | Jump backward / forward whole words across tokens and lines (also <kbd>Alt+B</kbd> / <kbd>Alt+F</kbd>) |
+| <kbd>Ctrl+Home</kbd> | **First Position** | Jump directly to the first character of the very first line |
+| <kbd>Ctrl+End</kbd> | **Last Position** | Jump directly to the end of the very last line |
+| <kbd>Home</kbd> | **Line Start** | Jump to the beginning of the current line |
+| <kbd>End</kbd> | **Line End** | Jump to the end of the current line |
+| <kbd>PageUp</kbd> / <kbd>PageDown</kbd> | **Page Jump** | Scroll and move cursor one screen up or down |
+| <kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>←</kbd> / <kbd>→</kbd> | **Caret Movement** | Move cursor line-by-line or letter-by-letter |
+
+#### 3. Quick Deletion
+| Shortcut | Action | Description |
+| --- | --- | --- |
+| <kbd>Ctrl+W</kbd> / <kbd>Ctrl+Backspace</kbd> | **Delete Word Left** | Delete the entire word or punctuation run to the left |
+| <kbd>Ctrl+Delete</kbd> | **Delete Word Right** | Delete the entire word or punctuation run to the right |
+| <kbd>Backspace</kbd> | **Delete Character Left** | Delete previous character (merges lines at column 0) |
+| <kbd>Delete</kbd> | **Delete Character Right** | Delete next character (merges with line below at line end) |
+
+#### 4. Completion & Control
+| Shortcut | Action | Description |
+| --- | --- | --- |
+| <kbd>Tab</kbd> or <kbd>→</kbd> | **Autocomplete / Indent** | Accept ghost text suggestion at end of line, or insert 2 spaces |
+| <kbd>Ctrl+S</kbd> | **Save** | Save changes and exit editor |
+| <kbd>Esc</kbd> / <kbd>Ctrl+C</kbd> | **Cancel** | Discard changes and exit without saving |
 
 ### Multi-Editor Auto-Sync (`snip sync`)
 
