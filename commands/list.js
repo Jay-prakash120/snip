@@ -5,9 +5,9 @@ import { loadSnippets } from '../lib/store.js';
  * Handles the "ls" command — lists all snippets in a table.
  * Usage: snip ls
  */
-export function listCommand() {
+export function listCommand(options = {}) {
   const snippets = loadSnippets();
-  const entries = Object.entries(snippets);
+  let entries = Object.entries(snippets);
 
   if (entries.length === 0) {
     console.log(chalk.yellow('\n  No snippets yet.\n'));
@@ -15,17 +15,33 @@ export function listCommand() {
     return;
   }
 
-  // Check if any snippet has a language set
+  // Filter by label if requested
+  if (options && options.label) {
+    const targetLabel = String(options.label).toLowerCase().trim();
+    entries = entries.filter(([, snip]) => {
+      const labels = Array.isArray(snip.labels) ? snip.labels : [];
+      return labels.some((l) => l.toLowerCase() === targetLabel);
+    });
+
+    if (entries.length === 0) {
+      console.log(chalk.yellow(`\n  No snippets found with label "${options.label}".\n`));
+      return;
+    }
+  }
+
+  // Check if any snippet has a language or labels set
   const hasLang = entries.some(([, snip]) => snip.language);
+  const hasLabels = entries.some(([, snip]) => Array.isArray(snip.labels) && snip.labels.length > 0) || Boolean(options && options.label);
 
   // Column widths
   const numWidth = 4;
   const prefixWidth = Math.min(
     Math.max(...entries.map(([name]) => name.length), 6) + 2,
-    30
+    28
   );
   const langWidth = hasLang ? 12 : 0;
-  const descWidth = hasLang ? 30 : 38;
+  const labelWidth = hasLabels ? 16 : 0;
+  const descWidth = hasLang && hasLabels ? 24 : (hasLang || hasLabels ? 30 : 38);
   const dateWidth = 12;
 
   const hPad = (text, width) => {
@@ -49,6 +65,12 @@ export function listCommand() {
     botBorder += `${'─'.repeat(langWidth)}┴`;
   }
 
+  if (hasLabels) {
+    topBorder += `${'─'.repeat(labelWidth)}┬`;
+    midBorder += `${'─'.repeat(labelWidth)}┼`;
+    botBorder += `${'─'.repeat(labelWidth)}┴`;
+  }
+
   topBorder += `${'─'.repeat(descWidth)}┬${'─'.repeat(dateWidth)}┐`;
   midBorder += `${'─'.repeat(descWidth)}┼${'─'.repeat(dateWidth)}┤`;
   botBorder += `${'─'.repeat(descWidth)}┴${'─'.repeat(dateWidth)}┘`;
@@ -66,6 +88,10 @@ export function listCommand() {
 
   if (hasLang) {
     header += chalk.bold(hPad(' Lang', langWidth)) + chalk.dim('│');
+  }
+
+  if (hasLabels) {
+    header += chalk.bold(hPad(' Labels', labelWidth)) + chalk.dim('│');
   }
 
   header +=
@@ -95,6 +121,11 @@ export function listCommand() {
       row += chalk.magenta(hPad(lang, langWidth)) + chalk.dim('│');
     }
 
+    if (hasLabels) {
+      const lblStr = Array.isArray(snip.labels) && snip.labels.length > 0 ? snip.labels.join(', ') : '—';
+      row += chalk.yellow(hPad(` ${truncate(lblStr, labelWidth - 2)}`, labelWidth)) + chalk.dim('│');
+    }
+
     row +=
       hPad(desc, descWidth) +
       chalk.dim('│') +
@@ -104,7 +135,11 @@ export function listCommand() {
   });
 
   console.log(chalk.dim(botBorder));
-  console.log(chalk.dim(`  ${entries.length} snippet(s) total\n`));
+  if (options && options.label) {
+    console.log(chalk.dim(`  ${entries.length} snippet(s) matching label "${options.label}"\n`));
+  } else {
+    console.log(chalk.dim(`  ${entries.length} snippet(s) total\n`));
+  }
 }
 
 /**

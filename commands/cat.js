@@ -26,11 +26,16 @@ export function catCommand(name) {
   const detectedLang = detectLanguage(body.join('\n'), name, snippet.language);
   const language = snippet.language || detectedLang || '';
 
+  const labelsLine = Array.isArray(snippet.labels) && snippet.labels.length > 0
+    ? `Labels:   ${snippet.labels.join(', ')}`
+    : '';
+
   // Calculate box width
   const allLines = [
     name,
     description,
     ...body,
+    labelsLine,
     `Created:  ${formatDate(snippet.createdAt)}`,
     `Modified: ${formatDate(snippet.updatedAt)}`,
     language ? `Language: ${language}` : '',
@@ -78,6 +83,11 @@ export function catCommand(name) {
     const langLine = `Language: ${language}`;
     console.log(
       chalk.dim('  │') + '  ' + chalk.magenta(pad(langLine, width - 2)) + chalk.dim('│')
+    );
+  }
+  if (labelsLine) {
+    console.log(
+      chalk.dim('  │') + '  ' + chalk.yellow(pad(labelsLine, width - 2)) + chalk.dim('│')
     );
   }
   const created = `Created:  ${formatDate(snippet.createdAt)}`;
