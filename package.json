@@ -11,7 +11,8 @@
     "snip-editor": "bin/snip-editor.js"
   },
   "scripts": {
-    "test": "node bin/snip.js --version && node --test"
+    "test": "node bin/snip.js --version && node --test",
+    "release": "npm test && npm version patch && git push origin master --follow-tags"
   },
   "keywords": [
     "snippets",

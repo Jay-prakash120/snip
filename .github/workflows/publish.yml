@@ -1,24 +1,29 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Ensure latest npm
         run: npm install -g npm@latest
@@ -29,10 +34,63 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Sync package version from release tag
+      - name: Check and bump version if needed
+        id: versioning
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          LATEST_NPM_VERSION=$(npm view @piceofsilicon/snip version 2>/dev/null || echo "0.0.0")
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          echo "Latest version on npm: $LATEST_NPM_VERSION"
+          echo "Current package.json version: $CURRENT_VERSION"
+
+          node -e "
+            const semverGt = (a, b) => {
+              const pa = a.split('.').map(Number);
+              const pb = b.split('.').map(Number);
+              for (let i = 0; i < 3; i++) {
+                if (pa[i] > pb[i]) return 1;
+                if (pa[i] < pb[i]) return -1;
+              }
+              return 0;
+            };
+            if (semverGt('$CURRENT_VERSION', '$LATEST_NPM_VERSION') > 0) {
+              process.exit(0);
+            } else {
+              process.exit(1);
+            }
+          " && MANUAL_BUMP=true || MANUAL_BUMP=false
+
+          if [ "$MANUAL_BUMP" = "true" ]; then
+            TARGET_VERSION="$CURRENT_VERSION"
+            echo "Using manually bumped version: $TARGET_VERSION"
+          else
+            npm version patch --no-git-tag-version
+            TARGET_VERSION=$(node -p "require('./package.json').version")
+            echo "Auto-bumped patch version: $TARGET_VERSION"
+          fi
+
+          echo "target_version=$TARGET_VERSION" >> $GITHUB_OUTPUT
+          echo "manual_bump=$MANUAL_BUMP" >> $GITHUB_OUTPUT
 
       - name: Publish to npm
         run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit version bump and create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: v${{ steps.versioning.outputs.target_version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [ "${{ steps.versioning.outputs.manual_bump }}" = "false" ]; then
+            git add package.json package-lock.json
+            git commit -m "chore: release version ${{ steps.versioning.outputs.target_version }} [skip ci]"
+            git push origin master
+          fi
+
+          gh release create "$TAG_NAME" \
+            --title "Release $TAG_NAME" \
+            --generate-notes
