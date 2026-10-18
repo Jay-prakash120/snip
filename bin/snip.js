@@ -43,6 +43,7 @@ program
   .argument('[name]', 'snippet prefix/name')
   .option('-m, --message <description>', 'description for the snippet')
   .option('-l, --lang <language>', 'language scope (e.g. python, javascript)')
+  .option('-L, --label <label>', 'label(s) for the snippet (comma-separated)')
   .action(async (name, options, command) => {
     // If no name and no subcommand was matched:
     // In interactive TTY, toggle/start the snip shell; in non-TTY, show help
@@ -64,6 +65,7 @@ program
   .description('Create a new snippet')
   .option('-m, --message <description>', 'description for the snippet')
   .option('-l, --lang <language>', 'language scope (e.g. python, javascript)')
+  .option('-L, --label <label>', 'label(s) for the snippet (comma-separated)')
   .action(async (name, options) => {
     const mergedOptions = { ...program.opts(), ...options };
     await createCommand(name, mergedOptions);
@@ -83,6 +85,7 @@ program
   .description('Edit an existing snippet')
   .option('-m, --message <description>', 'update the description')
   .option('-l, --lang <language>', 'update the language scope')
+  .option('-L, --label <label>', 'update the label(s) for the snippet')
   .option('-b, --body', 'open the editor to modify snippet body')
   .action(async (name, options) => {
     const mergedOptions = { ...program.opts(), ...options };
@@ -93,8 +96,9 @@ program
 program
   .command('ls')
   .description('List all saved snippets')
-  .action(() => {
-    listCommand();
+  .option('-L, --label <label>', 'filter snippets by label')
+  .action((options) => {
+    listCommand(options);
   });
 
 // ─── rm: remove snippets ──────────────────────────────────────────────────

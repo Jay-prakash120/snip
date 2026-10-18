@@ -31,7 +31,7 @@ snip
 ```bash
 # Create a new snippet (opens the inline editor)
 snip "replace_many()"
-snip "replace_many()" -m "a python function to handle multiple replace at a time"
+snip "replace_many()" -m "a python function to handle multiple replace at a time" --label "python, utils"
 
 # Display a snippet with syntax highlighting
 snip cat "replace_many()"
@@ -39,14 +39,18 @@ snip cat "replace_many()"
 # List all saved snippets
 snip ls
 
+# Filter snippets by label (like gh cli)
+snip ls --label "python"
+snip ls --label "Todo"
+
 # Remove a snippet
 snip rm "replace_many()"
 
 # Edit snippet body in the inline editor
 snip edit "my_snippet"
 
-# Edit metadata only without opening the editor
-snip edit "my_snippet" -l "python" -m "Updated description"
+# Edit metadata and labels without opening the editor
+snip edit "my_snippet" -l "python" -m "Updated description" --label "Todo"
 
 # Edit both metadata and snippet body
 snip edit "my_snippet" -l "ts" -b
@@ -92,7 +96,7 @@ The inline editor widget includes a rich set of IDE-like keyboard shortcuts for 
 #### 4. Completion & Control
 | Shortcut | Action | Description |
 | --- | --- | --- |
-| <kbd>Tab</kbd> or <kbd>→</kbd> | **Autocomplete / Indent** | Accept ghost text suggestion at end of line, or insert 2 spaces |
+| <kbd>Tab</kbd> or <kbd>→</kbd> | **Autocomplete / Indent** | Accept ghost text suggestion (drawn from current buffer, keywords, and **all saved snippets**), or insert 2 spaces |
 | <kbd>Ctrl+S</kbd> | **Save** | Save changes and exit editor |
 | <kbd>Esc</kbd> / <kbd>Ctrl+C</kbd> | **Cancel** | Discard changes and exit without saving |
 
@@ -135,8 +139,11 @@ snip export sublime
 snip config
 
 # Change editor mode (default is inline)
-snip config set editor inline    # In-terminal editor with syntax highlighting & instant paste
-snip config set editor external  # External editor ($EDITOR / Notepad / VS Code)
+snip config set editor inline        # In-terminal editor with syntax highlighting & instant paste
+snip config set editor external      # External editor ($EDITOR / Notepad / VS Code)
+
+# Configure comment visibility in the inline editor
+snip config set comment_color gray   # Default light gray (options: gray, dim, cyan, yellow, green, magenta, blue, white)
 ```
 
 ### Tab Auto-Completion

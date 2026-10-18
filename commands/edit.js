@@ -24,7 +24,8 @@ export async function editCommand(name, options) {
   const currentBody = Array.isArray(snippet.body) ? snippet.body.join('\n') : snippet.body;
   const descChanged = options.message !== undefined;
   const langChanged = options.lang !== undefined;
-  const wantsBodyEdit = options.body === true || (!descChanged && !langChanged);
+  const labelChanged = options.label !== undefined;
+  const wantsBodyEdit = options.body === true || (!descChanged && !langChanged && !labelChanged);
 
   let newLines = Array.isArray(snippet.body) ? [...snippet.body] : [snippet.body];
   let bodyChanged = false;
@@ -53,7 +54,7 @@ export async function editCommand(name, options) {
     bodyChanged = currentBody !== newBodyText;
   }
 
-  if (!bodyChanged && !descChanged && !langChanged) {
+  if (!bodyChanged && !descChanged && !langChanged && !labelChanged) {
     console.log(chalk.yellow('\n  No changes detected.\n'));
     return;
   }
@@ -62,6 +63,7 @@ export async function editCommand(name, options) {
     body: newLines,
     description: descChanged ? options.message : snippet.description,
     language: langChanged ? options.lang : snippet.language,
+    labels: labelChanged ? options.label : snippet.labels,
   });
 
   console.log(chalk.green(`\n  ✓ Updated "${name}"`));
@@ -79,6 +81,10 @@ export async function editCommand(name, options) {
   }
   if (langChanged) {
     console.log(chalk.dim(`    Language: "${updatedSnippet.language}"`));
+  }
+  if (labelChanged) {
+    const lblStr = updatedSnippet.labels?.length ? updatedSnippet.labels.join(', ') : '(none)';
+    console.log(chalk.dim(`    Labels: "${lblStr}"`));
   }
 
   const sync = autoExportIfEnabled();

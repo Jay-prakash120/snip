@@ -37,6 +37,9 @@ export async function createCommand(name, options) {
   if (options.lang) {
     console.log(chalk.dim(`  Language: ${options.lang}`));
   }
+  if (options.label) {
+    console.log(chalk.dim(`  Labels: ${options.label}`));
+  }
   console.log('');
 
   const bodyText = await promptBody({
@@ -62,6 +65,7 @@ export async function createCommand(name, options) {
     body: lines,
     description: options.message || '',
     language: options.lang || '',
+    labels: options.label,
   });
 
   console.log(chalk.green(`\n  ✓ Saved "${name}"`));
@@ -70,6 +74,9 @@ export async function createCommand(name, options) {
   }
   if (snippet.language) {
     console.log(chalk.dim(`    Language: ${snippet.language}`));
+  }
+  if (snippet.labels && snippet.labels.length > 0) {
+    console.log(chalk.dim(`    Labels: ${snippet.labels.join(', ')}`));
   }
   console.log(chalk.dim(`    ${lines.length} line(s)`));
 
