@@ -87,6 +87,24 @@ snip edit "my_snippet" -l "js" -m "New desc"
 snip edit "my_snippet" -l "ts" -b
 ```
 
+### Inline Editor Keyboard Shortcuts
+
+When editing snippets inside the terminal inline editor:
+
+| Shortcut | Description |
+| --- | --- |
+| <kbd>Ctrl+S</kbd> | Save and finish |
+| <kbd>Esc</kbd> / <kbd>Ctrl+C</kbd> | Cancel editing |
+| <kbd>Ctrl+Z</kbd> | Undo last change |
+| <kbd>Ctrl+Y</kbd> / <kbd>Ctrl+Shift+Z</kbd> | Redo change |
+| <kbd>Ctrl+←</kbd> / <kbd>Ctrl+→</kbd> | Jump backward / forward word by word |
+| <kbd>Ctrl+Home</kbd> | Jump to first position at first line |
+| <kbd>Ctrl+End</kbd> | Jump to end position at last line |
+| <kbd>Home</kbd> / <kbd>End</kbd> | Jump to beginning / end of current line |
+| <kbd>Ctrl+W</kbd> / <kbd>Ctrl+Backspace</kbd> | Delete previous word |
+| <kbd>Ctrl+Delete</kbd> | Delete next word |
+| <kbd>Tab</kbd> / <kbd>→</kbd> | Accept ghost text suggestion or indent |
+
 ### Multi-Editor Auto-Sync (`snip sync`)
 
 All snippets are automatically mirrored across your editors simultaneously. You don't have to worry about whether a snippet is only for VS Code or Antigravity — they share the exact same snippets!
