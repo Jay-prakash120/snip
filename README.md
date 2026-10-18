@@ -87,6 +87,14 @@ snip edit "my_snippet" -l "js" -m "New desc"
 snip edit "my_snippet" -l "ts" -b
 ```
 
+### Standalone File Editor (`snip-editor`)
+
+Edit any local file directly using the in-terminal editor:
+
+```bash
+snip-editor path/to/file.js
+```
+
 ### Inline Editor Keyboard Shortcuts
 
 When editing snippets inside the terminal inline editor:
@@ -161,6 +169,38 @@ snip completion install
 - Configuration: `~/.snip/config.json`
 - VS Code snippets: `%APPDATA%\Code\User\snippets\snip.code-snippets`
 - Antigravity snippets: `%APPDATA%\Antigravity\User\snippets\snip.code-snippets`
+
+## Publishing & Releases
+
+### Automated Publishing (CI/CD)
+Whenever you push changes to `master`:
+```bash
+git push origin master
+```
+GitHub Actions automatically:
+1. Runs the test suite (`npm test`).
+2. Checks the latest published version on npm.
+3. Automatically bumps the patch version if needed (e.g. `1.0.2` ➔ `1.0.3`).
+4. Signs and publishes the package to npm with cryptographic provenance.
+5. Commits the updated version back to `master` and creates a [GitHub Release](https://github.com/Jay-prakash120/snip/releases).
+
+### Renewing npm Token (Every 90 Days)
+If your npm token expires in 90 days:
+1. Open **[npmjs.com/settings/piceofsilicon/tokens](https://www.npmjs.com/settings/piceofsilicon/tokens)**.
+2. Generate a new token (**Classic Token** ➔ **Automation**).
+3. Update your GitHub secret via CLI in one command:
+   ```bash
+   gh secret set NPM_TOKEN -b "<paste_your_new_token_here>"
+   ```
+
+### (Optional) Tokenless Trusted Publishing (OIDC)
+If you ever want to stop managing tokens and never worry about 90-day expirations:
+1. Open **[npmjs.com/package/@piceofsilicon/snip/access](https://www.npmjs.com/package/@piceofsilicon/snip/access)**.
+2. Under **Trusted Publishers**, click **Add publisher** ➔ **GitHub Actions**:
+   - **Owner:** `Jay-prakash120`
+   - **Repository:** `snip`
+   - **Workflow:** `publish.yml`
+3. Once added, you can delete the secret (`gh secret delete NPM_TOKEN`) and publishing will work forever without tokens.
 
 ## License
 
